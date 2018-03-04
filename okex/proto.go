@@ -1,5 +1,12 @@
 package okex
 
+const (
+	OrderPlaceTypeBuy        = "buy"         //限价买
+	OrderPlaceTypeSell       = "sell"        //限价卖
+	OrderPlaceTypeBuyMarket  = "buy_market"  //市价买
+	OrderPlaceTypeSellMarket = "sell_market" //市价卖
+)
+
 type BalanceReturnInfo struct {
 	Funds struct {
 		Free    map[string]string `json:"free"`
@@ -10,4 +17,9 @@ type BalanceReturnInfo struct {
 type BalanceReturn struct {
 	Result bool              `json:"result"`
 	Info   BalanceReturnInfo `json:"info"`
+}
+
+type OrderPlaceReturn struct {
+	Result  bool  `json:"result"`
+	OrderID int64 `json:"order_id"`
 }

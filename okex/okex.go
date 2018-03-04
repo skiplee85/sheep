@@ -53,6 +53,18 @@ func (o *OKEX) GetAccountBalance() ([]proto.AccountBalance, error) {
 	return res, nil
 }
 
+//访问频率 20次/2秒
+func (o *OKEX) OrderPlace(params *proto.OrderPlaceParams) (*proto.OrderPlaceReturn, error) {
+	path := "trade.do"
+	var okRet OrderPlaceReturn
+	err := apiKeyPost(nil, path, o.accessKey, o.secretKey, &okRet)
+	if err != nil {
+		return nil, err
+	}
+	var ret proto.OrderPlaceReturn
+	return &ret, nil
+}
+
 func NewOKEX(apiKey, secretKey string) (*OKEX, error) {
 	return &OKEX{
 		accessKey: apiKey,

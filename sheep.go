@@ -10,6 +10,7 @@ import (
 type ExchageI interface {
 	GetExchangeType() string
 	GetAccountBalance() ([]proto.AccountBalance, error)
+	OrderPlace(params *proto.OrderPlaceParams) (*proto.OrderPlaceReturn, error)
 }
 
 func NewExchange(typ, accessKey, secretKey string) (ExchageI, error) {

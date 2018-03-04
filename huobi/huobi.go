@@ -95,16 +95,16 @@ func (h *Huobi) GetAccountBalance() ([]proto.AccountBalance, error) {
 
 // 下单
 // placeRequestParams: 下单信息
-// return: PlaceReturn对象
-func (h *Huobi) OrderPlace(amount, price float64, symbol, typ string) (string, error) {
+// return: OrderID
+func (h *Huobi) OrderPlace(params *proto.OrderPlaceParams) (*proto.OrderPlaceReturn, error) {
 	placeReturn := PlaceReturn{}
 	var placeRequestParams PlaceRequestParams
 	placeRequestParams.AccountID = strconv.FormatInt(h.tradeAccount.ID, 10)
-	placeRequestParams.Amount = strconv.FormatFloat(amount, 'f', -1, 64)
-	placeRequestParams.Price = strconv.FormatFloat(price, 'f', -1, 64)
+	placeRequestParams.Amount = strconv.FormatFloat(params.Amount, 'f', -1, 64)
+	placeRequestParams.Price = strconv.FormatFloat(params.Price, 'f', -1, 64)
 	placeRequestParams.Source = "api"
-	placeRequestParams.Symbol = symbol
-	placeRequestParams.Type = typ
+	placeRequestParams.Symbol = strings.ToLower(params.BaseCurrencyID) + strings.ToLower(params.QuoteCurrencyID)
+	placeRequestParams.Type = params.Type
 
 	mapParams := make(map[string]string)
 	mapParams["account-id"] = placeRequestParams.AccountID
@@ -123,10 +123,13 @@ func (h *Huobi) OrderPlace(amount, price float64, symbol, typ string) (string, e
 	json.Unmarshal([]byte(jsonPlaceReturn), &placeReturn)
 
 	if placeReturn.Status != "ok" {
-		return "", errors.New(placeReturn.ErrMsg)
+		return nil, errors.New(placeReturn.ErrMsg)
 	}
 
-	return placeReturn.Data, nil
+	var ret proto.OrderPlaceReturn
+	ret.OrderID = placeReturn.Data
+
+	return &ret, nil
 
 }
 
