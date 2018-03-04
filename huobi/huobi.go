@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/leek-box/sheep/consts"
+	"github.com/leek-box/sheep/proto"
 	"github.com/leizongmin/huobiapi"
 )
 
@@ -51,8 +53,8 @@ type Huobi struct {
 	detailListener DetailListener
 }
 
-func (h *Huobi) GetExchangeName() string {
-	return "HuobiPro"
+func (h *Huobi) GetExchangeType() string {
+	return consts.ExchangeTypeHuobi
 }
 
 // 查询当前用户的所有账户, 根据包含的私钥查询
@@ -69,7 +71,7 @@ func (h *Huobi) GetAccounts() AccountsReturn {
 
 // 根据账户ID查询账户余额
 // return: BalanceReturn对象
-func (h *Huobi) GetAccountBalance() (*Balance, error) {
+func (h *Huobi) GetAccountBalance() ([]proto.AccountBalance, error) {
 	balanceReturn := BalanceReturn{}
 	strRequest := fmt.Sprintf("/v1/account/accounts/%d/balance", h.tradeAccount.ID)
 	jsonBanlanceReturn := apiKeyGet(make(map[string]string), strRequest, h.accessKey, h.secretKey)
@@ -78,13 +80,23 @@ func (h *Huobi) GetAccountBalance() (*Balance, error) {
 		return nil, errors.New(balanceReturn.ErrMsg)
 	}
 
-	return &balanceReturn.Data, nil
+	var res []proto.AccountBalance
+	for _, blance := range balanceReturn.Data.List {
+		var item proto.AccountBalance
+		item.Currency = blance.Currency
+		item.Balance = blance.Balance
+		item.Type = blance.Type
+
+		res = append(res, item)
+	}
+
+	return res, nil
 }
 
 // 下单
 // placeRequestParams: 下单信息
 // return: PlaceReturn对象
-func (h *Huobi) Place(amount, price float64, symbol, typ string) (string, error) {
+func (h *Huobi) OrderPlace(amount, price float64, symbol, typ string) (string, error) {
 	placeReturn := PlaceReturn{}
 	var placeRequestParams PlaceRequestParams
 	placeRequestParams.AccountID = strconv.FormatInt(h.tradeAccount.ID, 10)
