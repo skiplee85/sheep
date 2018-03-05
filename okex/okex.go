@@ -1,6 +1,12 @@
 package okex
 
 import (
+	"net/url"
+
+	"strings"
+
+	"strconv"
+
 	"github.com/leek-box/sheep/consts"
 	"github.com/leek-box/sheep/proto"
 	"github.com/pkg/errors"
@@ -18,7 +24,7 @@ func (o *OKEX) GetExchangeType() string {
 func (o *OKEX) GetAccountBalance() ([]proto.AccountBalance, error) {
 	path := "userinfo.do"
 	var ret BalanceReturn
-	err := apiKeyPost(nil, path, o.accessKey, o.secretKey, &ret)
+	err := o.apiKeyPost(url.Values{}, path, &ret)
 	if err != nil {
 		return nil, err
 	}
@@ -56,12 +62,25 @@ func (o *OKEX) GetAccountBalance() ([]proto.AccountBalance, error) {
 //访问频率 20次/2秒
 func (o *OKEX) OrderPlace(params *proto.OrderPlaceParams) (*proto.OrderPlaceReturn, error) {
 	path := "trade.do"
+
+	values := url.Values{}
+	values.Set("symbol", strings.ToLower(params.BaseCurrencyID)+"_"+strings.ToLower(params.QuoteCurrencyID))
+	values.Set("type", TransOrderType(params.Type))
+	values.Set("price", strconv.FormatFloat(params.Price, 'f', -1, 64))
+	values.Set("amount", strconv.FormatFloat(params.Amount, 'f', -1, 64))
+
 	var okRet OrderPlaceReturn
-	err := apiKeyPost(nil, path, o.accessKey, o.secretKey, &okRet)
+	err := o.apiKeyPost(values, path, &okRet)
 	if err != nil {
 		return nil, err
 	}
+	if okRet.ErrorCode != 0 {
+		return nil, codeError(okRet.ErrorCode)
+	}
 	var ret proto.OrderPlaceReturn
+
+	ret.OrderID = strconv.FormatInt(okRet.OrderID, 10)
+
 	return &ret, nil
 }
 

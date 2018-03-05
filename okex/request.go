@@ -72,14 +72,9 @@ func httpGetRequest(strUrl string, mapParams map[string]string) string {
 	return string(body)
 }
 
-func httpPostRequest(strUrl string, mapParams map[string]string, accessKey, secretKey string) string {
+func httpPostRequest(strUrl string, values url.Values, accessKey, secretKey string) string {
 	httpClient := &http.Client{}
 
-	var values = url.Values{}
-
-	for k, v := range mapParams {
-		values.Set(k, v)
-	}
 	values.Set("api_key", accessKey)
 
 	hasher := util.MD5([]byte(values.Encode() + "&secret_key=" + secretKey))
@@ -107,8 +102,8 @@ func httpPostRequest(strUrl string, mapParams map[string]string, accessKey, secr
 	return string(body)
 }
 
-func apiKeyPost(mapParams map[string]string, strRequestPath string, accessKey, secretKey string, dst interface{}) error {
+func (o *OKEX) apiKeyPost(values url.Values, strRequestPath string, dst interface{}) error {
 	strUrl := apiURL + apiVersion + strRequestPath
-	resp := httpPostRequest(strUrl, mapParams, accessKey, secretKey)
+	resp := httpPostRequest(strUrl, values, o.accessKey, o.secretKey)
 	return json.Unmarshal([]byte(resp), dst)
 }

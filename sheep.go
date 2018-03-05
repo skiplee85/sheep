@@ -9,7 +9,9 @@ import (
 
 type ExchageI interface {
 	GetExchangeType() string
+	//获取账户余额
 	GetAccountBalance() ([]proto.AccountBalance, error)
+	//下单
 	OrderPlace(params *proto.OrderPlaceParams) (*proto.OrderPlaceReturn, error)
 }
 
@@ -19,6 +21,5 @@ func NewExchange(typ, accessKey, secretKey string) (ExchageI, error) {
 		return huobi.NewHuobi(accessKey, secretKey)
 	case consts.ExchangeTypeOKEX:
 		return okex.NewOKEX(accessKey, secretKey)
-
 	}
 }

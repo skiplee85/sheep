@@ -20,6 +20,7 @@ type BalanceReturn struct {
 }
 
 type OrderPlaceReturn struct {
-	Result  bool  `json:"result"`
-	OrderID int64 `json:"order_id"`
+	Result    bool  `json:"result"`
+	OrderID   int64 `json:"order_id"`
+	ErrorCode int   `json:"error_code"`
 }
