@@ -136,10 +136,10 @@ func (h *Huobi) OrderPlace(params *proto.OrderPlaceParams) (*proto.OrderPlaceRet
 // 申请撤销一个订单请求
 // strOrderID: 订单ID
 // return: PlaceReturn对象
-func (h *Huobi) SubmitCancel(strOrderID string) error {
+func (h *Huobi) OrderCancel(params *proto.OrderCancelParams) error {
 	placeReturn := PlaceReturn{}
 
-	strRequest := fmt.Sprintf("/v1/order/orders/%s/submitcancel", strOrderID)
+	strRequest := fmt.Sprintf("/v1/order/orders/%s/submitcancel", params.OrderID)
 	jsonPlaceReturn := apiKeyPost(make(map[string]string), strRequest, h.accessKey, h.secretKey)
 	json.Unmarshal([]byte(jsonPlaceReturn), &placeReturn)
 

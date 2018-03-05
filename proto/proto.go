@@ -29,3 +29,9 @@ type OrderPlaceParams struct {
 type OrderPlaceReturn struct {
 	OrderID string `json:"order_id"`
 }
+
+type OrderCancelParams struct {
+	OrderID         string `json:"order_id"`
+	BaseCurrencyID  string `json:"base_currency_id"`
+	QuoteCurrencyID string `json:"quote_currency_id"`
+}

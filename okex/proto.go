@@ -24,3 +24,9 @@ type OrderPlaceReturn struct {
 	OrderID   int64 `json:"order_id"`
 	ErrorCode int   `json:"error_code"`
 }
+
+type CancelOrderReturn struct {
+	Result    bool   `json:"result"`
+	OrderID   string `json:"order_id"`
+	ErrorCode int    `json:"error_code"`
+}

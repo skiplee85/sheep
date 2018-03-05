@@ -8,6 +8,8 @@ import (
 	"sort"
 	"strings"
 
+	"log"
+
 	"github.com/leek-box/sheep/util"
 )
 
@@ -105,5 +107,6 @@ func httpPostRequest(strUrl string, values url.Values, accessKey, secretKey stri
 func (o *OKEX) apiKeyPost(values url.Values, strRequestPath string, dst interface{}) error {
 	strUrl := apiURL + apiVersion + strRequestPath
 	resp := httpPostRequest(strUrl, values, o.accessKey, o.secretKey)
+	log.Println(resp)
 	return json.Unmarshal([]byte(resp), dst)
 }

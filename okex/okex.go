@@ -84,6 +84,28 @@ func (o *OKEX) OrderPlace(params *proto.OrderPlaceParams) (*proto.OrderPlaceRetu
 	return &ret, nil
 }
 
+func (o *OKEX) OrderCancel(params *proto.OrderCancelParams) error {
+	path := "cancel_order.do"
+	values := url.Values{}
+	values.Set("order_id", params.OrderID)
+	values.Set("symbol", strings.ToLower(params.BaseCurrencyID)+"_"+strings.ToLower(params.QuoteCurrencyID))
+
+	var okRet CancelOrderReturn
+	err := o.apiKeyPost(values, path, &okRet)
+	if err != nil {
+		return err
+	}
+	if okRet.ErrorCode != 0 {
+		return codeError(okRet.ErrorCode)
+	}
+	if !okRet.Result {
+		return errors.New("撤单失败")
+	}
+
+	return nil
+
+}
+
 func NewOKEX(apiKey, secretKey string) (*OKEX, error) {
 	return &OKEX{
 		accessKey: apiKey,
