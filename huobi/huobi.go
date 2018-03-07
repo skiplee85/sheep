@@ -153,10 +153,10 @@ func (h *Huobi) OrderCancel(params *proto.OrderCancelParams) error {
 // 查询订单详情
 // strOrderID: 订单ID
 // return: OrderReturn对象
-func (h *Huobi) GetOrderInfo(strOrderID string) (*Order, error) {
+func (h *Huobi) GetOrderInfo(params *proto.OrderInfoParams) (*proto.Order, error) {
 	orderReturn := OrderReturn{}
 
-	strRequest := fmt.Sprintf("/v1/order/orders/%s", strOrderID)
+	strRequest := fmt.Sprintf("/v1/order/orders/%s", params.OrderID)
 	jsonPlaceReturn := apiKeyGet(make(map[string]string), strRequest, h.accessKey, h.secretKey)
 	json.Unmarshal([]byte(jsonPlaceReturn), &orderReturn)
 
@@ -164,11 +164,20 @@ func (h *Huobi) GetOrderInfo(strOrderID string) (*Order, error) {
 		return nil, errors.New(orderReturn.ErrMsg)
 	}
 
-	return &orderReturn.Data, nil
+	var ret proto.Order
+	ret.Price, _ = strconv.ParseFloat(orderReturn.Data.Price, 64)
+	ret.ID = orderReturn.Data.ID
+	ret.Symbol = orderReturn.Data.Symbol
+	ret.State = orderReturn.Data.State
+	ret.FieldAmount, _ = strconv.ParseFloat(orderReturn.Data.FieldAmount, 64)
+	ret.Type = orderReturn.Data.Type
+	ret.Amount, _ = strconv.ParseFloat(orderReturn.Data.Amount, 64)
+
+	return &ret, nil
 
 }
 
-func (h *Huobi) GetOrders(params OrdersRequestParams) ([]Order, error) {
+func (h *Huobi) GetOrders(params *proto.OrdersParams) ([]proto.Order, error) {
 	ordersReturn := OrdersReturn{}
 
 	jsonP, _ := json.Marshal(params)
@@ -177,13 +186,27 @@ func (h *Huobi) GetOrders(params OrdersRequestParams) ([]Order, error) {
 	json.Unmarshal(jsonP, &paramMap)
 
 	strRequest := "/v1/order/orders"
-	ret := apiKeyGet(paramMap, strRequest, h.accessKey, h.secretKey)
-	json.Unmarshal([]byte(ret), &ordersReturn)
+	jsonRet := apiKeyGet(paramMap, strRequest, h.accessKey, h.secretKey)
+	json.Unmarshal([]byte(jsonRet), &ordersReturn)
 	if ordersReturn.Status != "ok" {
 		return nil, errors.New(ordersReturn.ErrMsg)
 	}
 
-	return ordersReturn.Data, nil
+	var ret []proto.Order
+	for _, cell := range ordersReturn.Data {
+		var item proto.Order
+		item.Price, _ = strconv.ParseFloat(cell.Price, 64)
+		item.ID = cell.ID
+		item.Symbol = cell.Symbol
+		item.State = cell.State
+		item.FieldAmount, _ = strconv.ParseFloat(cell.FieldAmount, 64)
+		item.Type = cell.Type
+		item.Amount, _ = strconv.ParseFloat(cell.Amount, 64)
+
+		ret = append(ret, item)
+	}
+
+	return ret, nil
 
 }
 
@@ -238,6 +261,10 @@ func (h *Huobi) SubscribeDepth(symbols ...string) {
 
 		})
 	}
+}
+
+func (h *Huobi) Close() error {
+	return h.market.Close()
 }
 
 func NewHuobi(accesskey, secretkey string) (*Huobi, error) {

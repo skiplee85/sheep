@@ -32,6 +32,39 @@ type OrderPlaceReturn struct {
 
 type OrderCancelParams struct {
 	OrderID         string `json:"order_id"`
-	BaseCurrencyID  string `json:"base_currency_id"`
-	QuoteCurrencyID string `json:"quote_currency_id"`
+	BaseCurrencyID  string `json:"base_currency_id"`  //OKEX 必填
+	QuoteCurrencyID string `json:"quote_currency_id"` //OKEX 必填
+}
+
+type OrderInfoParams struct {
+	OrderID         string `json:"order_id"`
+	BaseCurrencyID  string `json:"base_currency_id"`  //OKEX 必填
+	QuoteCurrencyID string `json:"quote_currency_id"` //OKEX 必填
+}
+
+const (
+	OrderStateFilled        = "filled"         //完全成交
+	OrderStateSubmitted     = "submitted"      //已提交
+	OrderStateCanceled      = "canceled"       //已撤销
+	OrderStatePartialFilled = "partial-filled" //部分成交
+)
+
+type Order struct {
+	ID          int64   `json:"id"`
+	Symbol      string  `json:"symbol"`
+	State       string  `json:"state"`
+	Amount      float64 `json:"amount"`
+	FieldAmount float64 `json:"field-amount"`
+	Price       float64 `json:"price"`
+	Type        string  `json:"type"`
+}
+
+type OrdersParams struct {
+	Symbol          string `json:"symbol"`
+	States          string `json:"states"`
+	BaseCurrencyID  string `json:"base_currency_id"`  //OKEX 必填
+	QuoteCurrencyID string `json:"quote_currency_id"` //OKEX 必填
+	Status          string `json:"status"`            //OKEX 查询状态 0：未完成的订单 1：已经完成的订单 （最近两天的数据）
+	CurrentPage     string `json:"current_page"`      //OKEX 当前页数
+	PageLength      string `json:"page_length"`       //OKEX 每页数据条数，最多不超过200
 }

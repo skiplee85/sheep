@@ -16,6 +16,10 @@ type ExchageI interface {
 	OrderPlace(params *proto.OrderPlaceParams) (*proto.OrderPlaceReturn, error)
 	//取消订单
 	OrderCancel(params *proto.OrderCancelParams) error
+	//获取订单详情
+	GetOrderInfo(params *proto.OrderInfoParams) (*proto.Order, error)
+	//获取历史订单列表
+	GetOrders(params *proto.OrdersParams) ([]proto.Order, error)
 }
 
 func NewExchange(typ, accessKey, secretKey string) (ExchageI, error) {

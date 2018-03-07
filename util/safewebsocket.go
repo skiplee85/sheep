@@ -1,4 +1,4 @@
-package huobi
+package util
 
 import (
 	"fmt"

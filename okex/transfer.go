@@ -25,3 +25,19 @@ func TransOrderType(t string) string {
 
 	}
 }
+
+func TransOrderStateFromStatus(s int) string {
+	switch s {
+	case OrderStatusCancel:
+		return proto.OrderStateCanceled
+	case OrderStatusFilled:
+		return proto.OrderStateFilled
+	case OrderStatusPartialFilled:
+		return proto.OrderStatePartialFilled
+	case OrderStatusUnsettled:
+		return proto.OrderStateSubmitted
+	default:
+		return "类型错误"
+
+	}
+}

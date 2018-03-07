@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"github.com/leek-box/sheep/util"
 	"io/ioutil"
 	"math/rand"
 	"time"
@@ -73,7 +74,7 @@ type wsOperation struct {
 }
 
 type Market struct {
-	ws *SafeWebSocket
+	ws *util.SafeWebSocket
 
 	listeners         map[string]Listener
 	subscribedTopic   map[string]bool
@@ -121,7 +122,7 @@ func NewMarket() (m *Market, err error) {
 // connect 连接
 func (m *Market) connect() error {
 	debug.Println("connecting")
-	ws, err := NewSafeWebSocket(Endpoint)
+	ws, err := util.NewSafeWebSocket(Endpoint)
 	if err != nil {
 		return err
 	}
@@ -334,7 +335,7 @@ func (m *Market) Loop() {
 		err := m.ws.Loop()
 		if err != nil {
 			debug.Println(err)
-			if err == SafeWebSocketDestroyError {
+			if err == util.SafeWebSocketDestroyError {
 				break
 			} else if m.autoReconnect {
 				m.reconnect()

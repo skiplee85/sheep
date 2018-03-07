@@ -7,6 +7,14 @@ const (
 	OrderPlaceTypeSellMarket = "sell_market" //市价卖
 )
 
+const (
+	OrderStatusCancel         = -1 //已撤销
+	OrderStatusUnsettled      = 0  //未成交
+	OrderStatusPartialFilled  = 1  //部分成交
+	OrderStatusFilled         = 2  //完全成交
+	OrderStatusCancelApplying = 4  //撤单申请中
+)
+
 type BalanceReturnInfo struct {
 	Funds struct {
 		Free    map[string]string `json:"free"`
@@ -27,6 +35,24 @@ type OrderPlaceReturn struct {
 
 type CancelOrderReturn struct {
 	Result    bool   `json:"result"`
-	OrderID   string `json:"order_id"`
 	ErrorCode int    `json:"error_code"`
+	OrderID   string `json:"order_id"`
+}
+
+type OrderInfoReturnOrderItem struct {
+	Amount     float64 `json:"amount"`
+	AvgPrice   string  `json:"avg_price"`
+	CreateDate int64   `json:"create_date"`
+	DealAmount float64 `json:"deal_amount"`
+	OrderID    int64   `json:"order_id"`
+	Price      float64 `json:"price"`
+	Status     int     `json:"status"`
+	Symbol     string  `json:"symbol"`
+	Type       string  `json:"type"`
+}
+
+type OrderInfoReturn struct {
+	Result    bool                       `json:"result"`
+	ErrorCode int                        `json:"error_code"`
+	Orders    []OrderInfoReturnOrderItem `json:"orders"`
 }

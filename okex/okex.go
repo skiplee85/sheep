@@ -106,6 +106,79 @@ func (o *OKEX) OrderCancel(params *proto.OrderCancelParams) error {
 
 }
 
+func (o *OKEX) GetOrderInfo(params *proto.OrderInfoParams) (*proto.Order, error) {
+	path := "order_info.do"
+	values := url.Values{}
+	values.Set("symbol", strings.ToLower(params.BaseCurrencyID)+"_"+strings.ToLower(params.QuoteCurrencyID))
+	values.Set("order_id", params.OrderID)
+
+	var okRet OrderInfoReturn
+	err := o.apiKeyPost(values, path, &okRet)
+	if err != nil {
+		return nil, err
+	}
+	if okRet.ErrorCode != 0 {
+		return nil, codeError(okRet.ErrorCode)
+	}
+	if !okRet.Result {
+		return nil, errors.New("获取失败")
+	}
+	if len(okRet.Orders) == 0 {
+		return nil, errors.New("获取失败")
+	}
+
+	okOrder := okRet.Orders[0]
+
+	var ret proto.Order
+	ret.ID = okOrder.OrderID
+	ret.Symbol = strings.Replace(okOrder.Symbol, "_", "", 1)
+	ret.State = TransOrderStateFromStatus(okOrder.Status)
+	ret.Amount = okOrder.Amount
+	ret.FieldAmount = okOrder.DealAmount
+	ret.Price = okOrder.Price
+	ret.Type = TransOrderType(okOrder.Type)
+
+	return &ret, nil
+}
+
+func (o *OKEX) GetOrders(params *proto.OrdersParams) ([]proto.Order, error) {
+	path := "order_history.do"
+	values := url.Values{}
+	values.Set("symbol", strings.ToLower(params.BaseCurrencyID)+"_"+strings.ToLower(params.QuoteCurrencyID))
+	values.Set("status", params.Status)
+	values.Set("current_page", params.CurrentPage)
+	values.Set("page_length", params.PageLength)
+
+	var okRet OrderInfoReturn
+	err := o.apiKeyPost(values, path, &okRet)
+	if err != nil {
+		return nil, err
+	}
+	if okRet.ErrorCode != 0 {
+		return nil, codeError(okRet.ErrorCode)
+	}
+	if !okRet.Result {
+		return nil, errors.New("获取失败")
+	}
+
+	var ret []proto.Order
+	for _, okOrder := range okRet.Orders {
+		var item proto.Order
+		item.ID = okOrder.OrderID
+		item.Symbol = strings.Replace(okOrder.Symbol, "_", "", 1)
+		item.State = TransOrderStateFromStatus(okOrder.Status)
+		item.Amount = okOrder.Amount
+		item.FieldAmount = okOrder.DealAmount
+		item.Price = okOrder.Price
+		item.Type = TransOrderType(okOrder.Type)
+
+		ret = append(ret, item)
+	}
+
+	return ret, nil
+
+}
+
 func NewOKEX(apiKey, secretKey string) (*OKEX, error) {
 	return &OKEX{
 		accessKey: apiKey,
