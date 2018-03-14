@@ -341,6 +341,7 @@ func (m *Market) Loop() {
 			} else if m.autoReconnect {
 				m.reconnect()
 			} else {
+				break
 			}
 		}
 	}
