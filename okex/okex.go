@@ -7,14 +7,18 @@ import (
 
 	"strconv"
 
+	"log"
+
 	"github.com/leek-box/sheep/consts"
 	"github.com/leek-box/sheep/proto"
+	"github.com/leizongmin/huobiapi"
 	"github.com/pkg/errors"
 )
 
 type OKEX struct {
 	accessKey string
 	secretKey string
+	market    *Market
 }
 
 func (o *OKEX) GetExchangeType() string {
@@ -179,9 +183,30 @@ func (o *OKEX) GetOrders(params *proto.OrdersParams) ([]proto.Order, error) {
 
 }
 
+func (h *OKEX) SubscribeDetail(symbols ...string) {
+	for _, symbol := range symbols {
+		h.market.Subscribe("ok_sub_spot_"+symbol+"_depth", func(topic string, j *huobiapi.JSON) {
+			js, _ := j.MarshalJSON()
+			log.Println(js)
+
+		})
+	}
+
+}
+
 func NewOKEX(apiKey, secretKey string) (*OKEX, error) {
-	return &OKEX{
+	o := &OKEX{
 		accessKey: apiKey,
 		secretKey: secretKey,
-	}, nil
+	}
+
+	var err error
+	o.market, err = NewMarket()
+	if err != nil {
+		return nil, err
+	}
+
+	go o.market.Loop()
+
+	return o, nil
 }
