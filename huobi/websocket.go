@@ -172,7 +172,7 @@ func (m *Market) sendMessage(data interface{}) error {
 func (m *Market) handleMessageLoop() {
 	m.ws.Listen(func(buf []byte) {
 		msg, err := unGzipData(buf)
-		fmt.Println("readMessage", string(msg))
+		//fmt.Println("readMessage", string(msg))
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -200,7 +200,7 @@ func (m *Market) handleMessageLoop() {
 			m.mutex.RLock()
 			listener, ok := m.listeners[ch]
 			if ok {
-				fmt.Println("handleSubscribe", json)
+				//fmt.Println("handleSubscribe", json)
 				listener(ch, json)
 			}
 			m.mutex.RUnlock()
