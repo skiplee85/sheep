@@ -13,6 +13,7 @@ import (
 	"math"
 
 	"github.com/bitly/go-simplejson"
+	"log"
 	"sync"
 )
 
@@ -197,14 +198,15 @@ func (m *Market) handleMessageLoop() {
 
 		// 处理订阅消息
 		if ch := json.Get("ch").MustString(); ch != "" {
+			log.Println(ch)
 			m.mutex.RLock()
-			defer m.mutex.RUnlock()
 			listener, ok := m.listeners[ch]
+			log.Println(listener, ok)
 			if ok {
 				fmt.Println("handleSubscribe", json)
 				listener(ch, json)
 			}
-
+			m.mutex.RUnlock()
 			return
 		}
 
@@ -273,9 +275,8 @@ func (m *Market) handlePing(ping pingData) (err error) {
 
 // Subscribe 订阅
 func (m *Market) Subscribe(topic string, listener Listener) error {
-	m.mutex.Lock()
-	defer m.mutex.Unlock()
-	fmt.Println("subscribe", topic)
+
+	log.Println("subscribe", topic)
 
 	var isNew = false
 
@@ -288,8 +289,10 @@ func (m *Market) Subscribe(topic string, listener Listener) error {
 		fmt.Println("send subscribe before, reset listener only")
 	}
 
+	m.mutex.Lock()
 	m.listeners[topic] = listener
 	m.subscribedTopic[topic] = true
+	m.mutex.Unlock()
 
 	if isNew {
 		var json = <-m.subscribeResultCb[topic]
@@ -298,6 +301,7 @@ func (m *Market) Subscribe(topic string, listener Listener) error {
 			return fmt.Errorf(msg)
 		}
 	}
+	log.Println("OKsubscribe", topic)
 	return nil
 }
 

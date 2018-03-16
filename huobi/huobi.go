@@ -3,10 +3,11 @@ package huobi
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
+	"fmt"
 	"github.com/leek-box/sheep/consts"
 	"github.com/leek-box/sheep/proto"
 	"github.com/leizongmin/huobiapi"
@@ -228,7 +229,7 @@ func (h *Huobi) SubscribeDetail(symbols ...string) {
 			var mtd MarketTradeDetail
 			err := json.Unmarshal(js, &mtd)
 			if err != nil {
-				fmt.Println(err.Error())
+				log.Println(err.Error())
 			}
 
 			ts := strings.Split(topic, ".")
@@ -251,7 +252,7 @@ func (h *Huobi) SubscribeDepth(symbols ...string) {
 			var md = MarketDepth{}
 			err := json.Unmarshal(js, &md)
 			if err != nil {
-				fmt.Println(err.Error())
+				log.Println(err.Error())
 			}
 
 			ts := strings.Split(topic, ".")
@@ -274,7 +275,7 @@ func NewHuobi(accesskey, secretkey string) (*Huobi, error) {
 	}
 
 	if accesskey != "" {
-		fmt.Println("init huobi.")
+		log.Println("init huobi.")
 		ret := h.GetAccounts()
 		if ret.Status != "ok" {
 			return nil, errors.New(ret.ErrMsg)
@@ -282,7 +283,7 @@ func NewHuobi(accesskey, secretkey string) (*Huobi, error) {
 
 		for _, account := range ret.Data {
 			if account.Type == "spot" {
-				fmt.Println("account id:", account.ID)
+				log.Println("account id:", account.ID)
 				h.tradeAccount.ID = account.ID
 				h.tradeAccount.Type = account.Type
 				h.tradeAccount.State = account.State
@@ -301,7 +302,7 @@ func NewHuobi(accesskey, secretkey string) (*Huobi, error) {
 
 	go h.market.Loop()
 
-	fmt.Println("init huobi success.")
+	log.Println("init huobi success.")
 
 	return h, nil
 }
