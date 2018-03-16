@@ -13,7 +13,6 @@ import (
 	"math"
 
 	"github.com/bitly/go-simplejson"
-	"log"
 	"sync"
 )
 
@@ -198,10 +197,8 @@ func (m *Market) handleMessageLoop() {
 
 		// 处理订阅消息
 		if ch := json.Get("ch").MustString(); ch != "" {
-			log.Println(ch)
 			m.mutex.RLock()
 			listener, ok := m.listeners[ch]
-			log.Println(listener, ok)
 			if ok {
 				fmt.Println("handleSubscribe", json)
 				listener(ch, json)
@@ -275,9 +272,6 @@ func (m *Market) handlePing(ping pingData) (err error) {
 
 // Subscribe 订阅
 func (m *Market) Subscribe(topic string, listener Listener) error {
-
-	log.Println("subscribe", topic)
-
 	var isNew = false
 
 	// 如果未曾发送过订阅指令，则发送，并等待订阅操作结果，否则直接返回
@@ -301,7 +295,6 @@ func (m *Market) Subscribe(topic string, listener Listener) error {
 			return fmt.Errorf(msg)
 		}
 	}
-	log.Println("OKsubscribe", topic)
 	return nil
 }
 
