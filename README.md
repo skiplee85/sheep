@@ -1,6 +1,6 @@
 # sheep
 
-Huobi API Toolkit 火币API工具集
+火币，OKEX，币安 API工具集
 
 ## example
 
@@ -20,13 +20,30 @@ func main() {
 		return
 	}
 
-	h.GetAccountBalance()
+	// 打开websocket通信
+	err = h.OpenWebsocket()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseWebsocket()
 
-	listener := func(symbol string, depth *huobi.MarketDepth) {
+	//获取账户余额
+	balances, err := h.GetAccountBalance()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println(balances)
+
+	//webcosket监听函数
+	listen := func(symbol string, depth *huobi.MarketDepth) {
 		log.Println(depth)
 	}
-	h.SetDepthlListener(listener)
 
+	//设置监听
+	h.SetDepthlListener(listen)
+
+	//订阅
 	h.SubscribeDepth("btcusdt")
 	h.SubscribeDepth("ethusdt")
 
