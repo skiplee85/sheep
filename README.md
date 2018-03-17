@@ -2,6 +2,9 @@
 
 火币，OKEX，币安 API工具集
 
+
+币安 API 基于 https://github.com/pdepip/go-binance
+
 ## example
 
 ``` go
