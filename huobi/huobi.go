@@ -54,7 +54,7 @@ type Huobi struct {
 	detailListener DetailListener
 }
 
-func (h *Huobi) Websocket() error {
+func (h *Huobi) OpenWebsocket() error {
 	var err error
 	h.market, err = NewMarket()
 	if err != nil {
@@ -63,6 +63,10 @@ func (h *Huobi) Websocket() error {
 
 	go h.market.Loop()
 	return nil
+}
+
+func (h *Huobi) CloseWebsocket() error {
+	return h.market.Close()
 }
 
 func (h *Huobi) GetExchangeType() string {
@@ -273,10 +277,6 @@ func (h *Huobi) SubscribeDepth(symbols ...string) {
 
 		})
 	}
-}
-
-func (h *Huobi) Close() error {
-	return h.market.Close()
 }
 
 func NewHuobi(accesskey, secretkey string) (*Huobi, error) {
