@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/skiplee85/sheep/util"
 )
 
 const host = "https://api.huobi.pro"
@@ -15,7 +17,7 @@ const host = "https://api.huobi.pro"
 // strParams: string类型的请求参数, user=lxz&pwd=lxz
 // return: 请求结果
 func httpGetRequest(strUrl string, mapParams map[string]string) string {
-	httpClient := &http.Client{}
+	httpClient := &http.Client{Transport: &http.Transport{Proxy: util.GetProxy()}}
 
 	var strRequestUrl string
 	if nil == mapParams {
@@ -53,7 +55,7 @@ func httpGetRequest(strUrl string, mapParams map[string]string) string {
 // mapParams: map类型的请求参数
 // return: 请求结果
 func httpPostRequest(strUrl string, mapParams map[string]string) string {
-	httpClient := &http.Client{}
+	httpClient := &http.Client{Transport: &http.Transport{Proxy: util.GetProxy()}}
 
 	jsonParams := ""
 	if nil != mapParams {

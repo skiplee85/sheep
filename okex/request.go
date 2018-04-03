@@ -10,7 +10,7 @@ import (
 
 	"log"
 
-	"github.com/leek-box/sheep/util"
+	"github.com/skiplee85/sheep/util"
 )
 
 const (
@@ -41,7 +41,7 @@ func map2UrlQuery(mapParams map[string]string) string {
 }
 
 func httpGetRequest(strUrl string, mapParams map[string]string) string {
-	httpClient := &http.Client{}
+	httpClient := &http.Client{Transport: &http.Transport{Proxy: util.GetProxy()}}
 
 	var strRequestUrl string
 	if nil == mapParams {
@@ -75,7 +75,7 @@ func httpGetRequest(strUrl string, mapParams map[string]string) string {
 }
 
 func httpPostRequest(strUrl string, values url.Values, accessKey, secretKey string) string {
-	httpClient := &http.Client{}
+	httpClient := &http.Client{Transport: &http.Transport{Proxy: util.GetProxy()}}
 
 	values.Set("api_key", accessKey)
 

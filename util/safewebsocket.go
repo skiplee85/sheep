@@ -28,7 +28,8 @@ type SafeWebSocketAliveHandler = func()
 
 // NewSafeWebSocket 创建安全的WebSocket实例并连接
 func NewSafeWebSocket(endpoint string) (*SafeWebSocket, error) {
-	ws, _, err := websocket.DefaultDialer.Dial(endpoint, nil)
+	d := websocket.Dialer{Proxy: GetProxy()}
+	ws, _, err := d.Dial(endpoint, nil)
 	if err != nil {
 		return nil, err
 	}

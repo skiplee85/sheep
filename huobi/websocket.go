@@ -5,7 +5,7 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
-	"github.com/leek-box/sheep/util"
+	"github.com/skiplee85/sheep/util"
 	"io/ioutil"
 	"math/rand"
 	"time"

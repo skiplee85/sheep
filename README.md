@@ -1,22 +1,24 @@
 # sheep
 
-火币，OKEX，币安 API工具集
-
+火币，OKEX，币安 API 工具集
 
 币安 API 基于 https://github.com/pdepip/go-binance 实现
 
 ## example
 
-``` go
+```go
 import (
 	"log"
 
 	"time"
 
-	"github.com/leek-box/sheep/huobi"
+	"github.com/skiplee85/sheep/huobi"
 )
 
 func main() {
+	// 设置代理
+	util.SetProxy("http://127.0.0.1:1080")
+
 	h, err := huobi.NewHuobi("your-access-key", "your-secret-key")
 	if err != nil {
 		log.Println(err.Error())
@@ -52,5 +54,4 @@ func main() {
 
 	time.Sleep(time.Hour)
 }
-
 ```

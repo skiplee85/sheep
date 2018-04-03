@@ -1,11 +1,11 @@
 package sheep
 
 import (
-	"github.com/leek-box/sheep/consts"
-	"github.com/leek-box/sheep/huobi"
-	"github.com/leek-box/sheep/okex"
-	"github.com/leek-box/sheep/proto"
 	"github.com/pkg/errors"
+	"github.com/skiplee85/sheep/consts"
+	"github.com/skiplee85/sheep/huobi"
+	"github.com/skiplee85/sheep/okex"
+	"github.com/skiplee85/sheep/proto"
 )
 
 type ExchageI interface {

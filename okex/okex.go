@@ -9,10 +9,10 @@ import (
 
 	"log"
 
-	"github.com/leek-box/sheep/consts"
-	"github.com/leek-box/sheep/proto"
 	"github.com/leizongmin/huobiapi"
 	"github.com/pkg/errors"
+	"github.com/skiplee85/sheep/consts"
+	"github.com/skiplee85/sheep/proto"
 )
 
 type OKEX struct {

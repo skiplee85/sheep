@@ -15,6 +15,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/skiplee85/sheep/util"
 )
 
 type Client struct {
@@ -45,7 +47,7 @@ func NewClient(key, secret string) (c *Client) {
 	client := &Client{
 		key:        key,
 		secret:     secret,
-		httpClient: &http.Client{},
+		httpClient: &http.Client{Transport: &http.Transport{Proxy: util.GetProxy()}},
 	}
 	return client
 }
